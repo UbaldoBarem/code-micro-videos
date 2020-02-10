@@ -81,7 +81,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Microservice Videos
                 </div>
 
                 <div class="links">
