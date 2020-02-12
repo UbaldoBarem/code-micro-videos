@@ -5,7 +5,11 @@ namespace PHPSTORM_META {
 
    /**
     * PhpStorm Meta file, to provide autocomplete information for PhpStorm
+<<<<<<< HEAD
     * Generated on 2020-02-11 05:32:07.
+=======
+    * Generated on 2020-02-11 13:14:13.
+>>>>>>> feature/categories-create
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
     * @see https://github.com/barryvdh/laravel-ide-helper
