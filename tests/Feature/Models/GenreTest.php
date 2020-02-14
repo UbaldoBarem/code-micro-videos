@@ -89,7 +89,20 @@ class GenreTest extends TestCase
 
         $this->assertTrue($result);
 
-        // $this->assertStringMatchesFormat('%x-%x-%x-%x-%x',$genre->id);
+        $this->assertStringMatchesFormat('%x-%x-%x-%x-%x',$genre->id);
+    }
+
+
+    public function testDelete()
+    {
+        $genre = Genre::create([
+            'name' => 'Genre to delete'
+        ]);
+
+        print_r($genre->name);
+
+        $this->assertEquals('Genre to delete',$genre->name);
+        $this->assertTrue($genre->delete());
     }
 
 }
