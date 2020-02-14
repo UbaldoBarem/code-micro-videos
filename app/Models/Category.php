@@ -26,8 +26,10 @@ class Category extends Model
             'deleted_at'
         ];
 
-    protected $casts = [
-        'id' => 'string'
-    ];
+    protected $casts =
+        [
+            'id' => 'string',
+            'is_active' => 'boolean'
+        ];
 
 }
