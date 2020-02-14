@@ -88,7 +88,20 @@ class CategoryTest extends TestCase
 
         $this->assertTrue($result);
 
-        // $this->assertStringMatchesFormat('%x-%x-%x-%x-%x',$category->id);
+
+        $this->assertStringMatchesFormat('%x-%x-%x-%x-%x',$category->id);
+    }
+
+    public function testDelete()
+    {
+        $category = Category::create([
+            'name' => 'Category to delete'
+        ]);
+
+        print_r($category->name);
+
+        $this->assertEquals('Category to delete',$category->name);
+        $this->assertTrue($category->delete());
     }
 
 }
