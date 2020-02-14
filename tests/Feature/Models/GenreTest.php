@@ -2,23 +2,23 @@
 
 namespace Tests\Feature\Models;
 
-use App\Models\Category;
+use App\Models\Genre;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CategoryTest extends TestCase
+class GenreTest extends TestCase
 {
     use DatabaseMigrations;
 
     public function testList()
     {
-        factory(Category::class, 1)->create();
-        $categories = Category::all();
-        $this->assertCount(1, $categories);
-        $categoryKey = array_keys($categories->first()->getAttributes());
-        // print_r($categoryKey);
+        factory(Genre::class, 1)->create();
+        $genres = Genre::all();
+        $this->assertCount(1, $genres);
+        $genreKey = array_keys($genres->first()->getAttributes());
+        // print_r($genreKey);
         $this->assertEqualsCanonicalizing(
             [
                 'id',
@@ -29,56 +29,57 @@ class CategoryTest extends TestCase
                 'updated_at',
                 'deleted_at'
             ],
-            $categoryKey);
+            $genreKey);
     }
 
     public function testCreate()
     {
-        $category = Category::create([
+        $genre = Genre::create([
             'name' => 'teste1000'
         ]);
 
-        $category->refresh();
+        $genre->refresh();
 
-        $this->assertEquals('teste1000',$category->name);
-        $this->assertNull($category->description);
-        $this->assertTrue($category->is_active);
+        $this->assertEquals('teste1000', $genre->name);
+        $this->assertNull($genre->description);
+        $this->assertTrue($genre->is_active);
 
-        $category = Category::create([
+        $genre = Genre::create([
             'name' => 'teste1001',
             'description' => null
         ]);
-        $this->assertNull($category->description);
+        $this->assertNull($genre->description);
 
-        $category = Category::create([
+        $genre = Genre::create([
             'name' => 'teste1001',
             'description' => 'description test'
         ]);
-        $this->assertEquals('description test',$category->description);
+        $this->assertEquals('description test', $genre->description);
 
         // ----------------
         // is_active test
         // ----------------
-        $category = Category::create([
+        $genre = Genre::create([
             'name' => 'teste1001',
             'is_active' => false
         ]);
-        $this->assertFalse($category->is_active);
+        $this->assertFalse($genre->is_active);
 
-        $category = Category::create([
+        $genre = Genre::create([
             'name' => 'teste1001',
             'is_active' => true
         ]);
-        $this->assertTrue($category->is_active);
+        $this->assertTrue($genre->is_active);
     }
+
 
     public function testUuidIsValid()
     {
-        $category = Category::create([
+        $genre = Genre::create([
             'name' => 'teste uuid valid'
         ]);
 
-        $uuid = $category->id;
+        $uuid = $genre->id;
 
         if (!is_string($uuid) || (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $uuid) !== 1)) {
             $result = false;
@@ -88,7 +89,7 @@ class CategoryTest extends TestCase
 
         $this->assertTrue($result);
 
-        // $this->assertStringMatchesFormat('%x-%x-%x-%x-%x',$category->id);
+        // $this->assertStringMatchesFormat('%x-%x-%x-%x-%x',$genre->id);
     }
 
 }
