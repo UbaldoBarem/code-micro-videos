@@ -163,5 +163,22 @@ class CategoryControllerTest extends TestCase
 
     }
 
+    public function testDelete()
+    {
+        $response = $this->json('POST', route('api.categories.store'), [
+            'name' => 'category to delete'
+        ]);
+
+        $id = $response->json('id');
+        $category = Category::find($id);
+
+        $response = $this->json('DELETE', route('api.categories.destroy', ['category' => $category->id]));
+        $response->assertStatus(204);
+
+        $response = $this->json('GET', route('api.categories.show', ['category' => $category->id]));
+        $response->assertStatus(404);
+
+    }
+
 
 }
