@@ -8,13 +8,12 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-
     private $rules = [
         'name' => 'required|max:255',
         'is_active' => 'boolean'
     ];
 
-    public function index()
+    public function index(Request $request)
     {
         return Category::all();
     }
@@ -25,7 +24,6 @@ class CategoryController extends Controller
         $category = Category::create($request->all());
         $category->refresh();
         return $category;
-
     }
 
     public function show(Category $category)
