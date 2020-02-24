@@ -23,7 +23,6 @@ class CategoryControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->getMockForAbstractClass();
         $this->category = factory(Category::class)->create();
     }
 
@@ -70,25 +69,18 @@ class CategoryControllerTest extends TestCase
         $data = [
             'name' => 'test'
         ];
-        $this->assertStore($data, $data + ['description' => null, 'is_active' => true, 'deleted_at' => null]);
+        $this->assertStore($data, $data + [ 'is_active' => true, 'deleted_at' => null]);
 
         $data = [
             'name' => 'test',
-            'description' => 'description test',
             'is_active' => false
         ];
-        $this->assertStore($data, $data + ['description' => 'description test', 'is_active' => false]);
+        $this->assertStore($data, $data + [ 'is_active' => false]);
 
     }
 
     public function testUpdate()
     {
-        $this->category = factory(Category::class)->create(
-            [
-                'description' => 'description',
-                'is_active' => false
-            ]
-        );
         $data = [
             'name' => 'test',
             'description' => 'test',

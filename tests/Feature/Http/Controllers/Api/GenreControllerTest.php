@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\Feature\Http\Controllers\Api;
 
@@ -68,28 +69,20 @@ class GenreControllerTest extends TestCase
         $data = [
             'name' => 'test'
         ];
-        $this->assertStore($data, $data + ['description' => null, 'is_active' => true, 'deleted_at' => null]);
+        $this->assertStore($data, $data + [ 'is_active' => true, 'deleted_at' => null]);
 
         $data = [
             'name' => 'test',
-            'description' => 'description test',
             'is_active' => false
         ];
-        $this->assertStore($data, $data + ['description' => 'description test', 'is_active' => false]);
+        $this->assertStore($data, $data + ['is_active' => false]);
 
     }
 
     public function testUpdate()
     {
-        $this->genre = factory(Genre::class)->create(
-            [
-                'description' => 'description',
-                'is_active' => false
-            ]
-        );
         $data = [
             'name' => 'test',
-            'description' => 'test',
             'is_active' => true
         ];
         $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
@@ -98,17 +91,10 @@ class GenreControllerTest extends TestCase
         ]);
 
         $data = [
-            'name' => 'test',
-            'description' => ''
+            'name' => 'test'
         ];
-        $this->assertUpdate($data, array_merge($data, ['description' => null]));
 
-
-        $data['description'] =  'test';
-        $this->assertUpdate($data, array_merge($data, ['description' => 'test']));
-
-        $data['description'] =  null;
-        $this->assertUpdate($data, array_merge($data, ['description' => null]));
+        $this->assertUpdate($data, array_merge($data));
 
     }
 
