@@ -115,7 +115,8 @@ class BasicCrudControllerTest extends TestCase
     {
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
         $response = $this->controller->destroy($category->id);
-        $this->createTestResponse($response)
+        $this
+            ->createTestResponse($response)
             ->assertStatus(204);
         $this->assertCount(0, CategoryStub::all());
     }

@@ -113,7 +113,7 @@ class CastMemberControllerTest extends TestCase
 
     protected function routeUpdate()
     {
-        return route('api.cast_members.update', ['castMember' => $this->castMember->id]);
+        return route('api.cast_members.update', ['cast_member' => $this->castMember->id]);
     }
 
 }

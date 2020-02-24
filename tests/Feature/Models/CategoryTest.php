@@ -8,7 +8,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CategoryUnitTest extends TestCase
+class CategoryTest extends TestCase
 {
     use DatabaseMigrations;
 

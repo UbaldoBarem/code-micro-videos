@@ -53,5 +53,4 @@ abstract class BasicCrudController extends Controller
         return response()->noContent();
     }
 
-
 }
