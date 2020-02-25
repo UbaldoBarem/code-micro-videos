@@ -10,7 +10,7 @@ class Video extends Model
     use SoftDeletes;
     use Traits\Uuid;
 
-    const RATTING_LIST = ['L','10','12','14','16','18'];
+    const RATTING_LIST = ['L', '10', '12', '14', '16', '18'];
 
     public $incrementing = false;
 
@@ -39,4 +39,13 @@ class Video extends Model
             'duration' => 'integer'
         ];
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class);
+    }
 }

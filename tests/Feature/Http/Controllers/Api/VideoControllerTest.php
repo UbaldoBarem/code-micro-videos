@@ -17,11 +17,52 @@ class VideoControllerTest extends TestCase
     Use TestSaves;
 
     private $video;
+    private $sendData;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->video = factory(Video::class)->create();
+        $this->sendData =
+            [
+                'title' => 'title',
+                'description' => 'description',
+                'year_launched' => 2010,
+                'rating' => Video::RATTING_LIST[0],
+                'duration' => 90,
+                'categories_id' => ['026f31de-1c9d-4f62-9e8f-445c43a937f0'],
+                'genres_id' => ['026f31de-1c9d-4f62-9e8f-445c43a937f0'],
+            ];
+    }
+
+    public function testInvalidationCategoriesIdField()
+    {
+        $data = [
+            'categories_id' => 'd',
+        ];
+        $this->assertInvalidationInStoreAction($data, 'array');
+        $this->assertInvalidationInUpdateAction($data, 'array');
+
+        $data = [
+            'categories_id' => [100],
+        ];
+        $this->assertInvalidationInStoreAction($data, 'exists');
+        $this->assertInvalidationInUpdateAction($data, 'exists');
+    }
+
+    public function testInvalidationGenresIdField()
+    {
+        $data = [
+            'genres_id' => 'd'
+        ];
+        $this->assertInvalidationInStoreAction($data, 'array');
+        $this->assertInvalidationInUpdateAction($data, 'array');
+
+        $data = [
+            'genres_id' => [100]
+        ];
+        $this->assertInvalidationInStoreAction($data, 'exists');
+        $this->assertInvalidationInUpdateAction($data, 'exists');
     }
 
     public function testIndex()
@@ -39,8 +80,10 @@ class VideoControllerTest extends TestCase
             'title' => '',
             'description' => '',
             'year_launched' => '',
+            'rating' => '',
             'duration' => '',
-            'rating' => ''
+            'categories_id' => '',
+            'genres_id' => ''
         ];
         $this->assertInvalidationInStoreAction($data, 'required');
         $this->assertInvalidationInUpdateAction($data, 'required');
@@ -60,8 +103,8 @@ class VideoControllerTest extends TestCase
         $data = [
             'duration' => 'd',
         ];
-        $this->assertInvalidationInStoreAction($data, 'max.string', 'integer');
-        $this->assertInvalidationInUpdateAction($data, 'max.string', 'integer');
+        $this->assertInvalidationInStoreAction($data, 'integer');
+        $this->assertInvalidationInUpdateAction($data, 'integer');
     }
 
     public function testInvalidationYearLaunchedField()
@@ -69,8 +112,8 @@ class VideoControllerTest extends TestCase
         $data = [
             'year_launched' => 'Y',
         ];
-        $this->assertInvalidationInStoreAction($data, 'date_format', ['format'=> 'Y']);
-        $this->assertInvalidationInUpdateAction($data, 'date_format',['format'=> 'Y']);
+        $this->assertInvalidationInStoreAction($data, 'date_format', ['format' => 'Y']);
+        $this->assertInvalidationInUpdateAction($data, 'date_format', ['format' => 'Y']);
     }
 
     public function testInvalidationBoolean()
@@ -91,53 +134,44 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationInUpdateAction($data, 'in');
     }
 
-    public function testStore()
+    public function testSave()
     {
         $data = [
             [
-                'name' => 'test',
-                'type' => Video::TYPE_DIRECTOR
+                'send_data' => $this->sendData,
+                'test_data' => $this->sendData + ['opened' => false]
             ],
             [
-                'name' => 'test',
-                'type' => Video::TYPE_ACTOR
+                'send_data' => $this->sendData + ['opened' => true],
+                'test_data' => $this->sendData + ['opened' => true]
+            ],
+            [
+                'send_data' => $this->sendData + ['rating' => Video::RATTING_LIST[1]],
+                'test_data' => $this->sendData + ['rating' => Video::RATTING_LIST[1]]
             ]
         ];
+
         foreach ($data as $key => $value) {
-            $response = $this->assertStore($value, $value + ['deleted_at' => null]);
-            $response->assertJsonStructure([
-                'created_at', 'updated_at'
-            ]);
+            $response = $this->assertStore($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
+            $response->assertJsonStructure(['created_at', 'updated_at']);
+
+            $response = $this->assertStore($value['send_data'], $value['test_data'] + ['deleted_at' => null]);
+            $response->assertJsonStructure(['created_at', 'updated_at']);
         }
-    }
-
-    public function testUpdate()
-    {
-        $data = [
-            'name' => 'test',
-            'type' => Video::TYPE_ACTOR
-        ];
-        $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
-        $response->assertJsonStructure([
-            'created_at', 'updated_at'
-        ]);
-
     }
 
     public function testShow()
     {
-        $response = $this->get(route('api.cast_members.show', ['cast_member' => $this->castMember->id]));
-        $response
-            ->assertStatus(200)
-            ->assertJson($this->castMember->toArray());
+        $response = $this->json('GET', route('api.videos.show', ['video' => $this->video->id]));
+        $response->assertStatus(200)->assertJson($this->video->toArray());
     }
 
     public function testDestroy()
     {
-        $response = $this->json('DELETE', route('api.cast_members.destroy', ['cast_member' => $this->castMember->id]));
+        $response = $this->json('DELETE', route('api.videos.destroy', ['video' => $this->video->id]));
         $response->assertStatus(204);
-        $this->assertNull(Video::find($this->castMember->id));
-        $this->assertNotNull(Video::withTrashed()->find($this->castMember->id));
+        $this->assertNull(Video::find($this->video->id));
+        $this->assertNotNull(Video::withTrashed()->find($this->video->id));
     }
 
     protected function routeStore()
