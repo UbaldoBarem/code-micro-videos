@@ -32,4 +32,14 @@ class Genre extends Model
             'is_active' => 'boolean'
         ];
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class)->withTrashed();
+    }
+
+    public function videos()
+    {
+        return $this->belongsToMany(Video::class)->withTrashed();
+    }
+
 }

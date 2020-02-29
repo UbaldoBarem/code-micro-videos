@@ -9,6 +9,7 @@ class CreateCategoryVideoTable extends Migration
     public function up()
     {
         Schema::create('category_video', function (Blueprint $table) {
+
             $table->uuid('category_id')->index();
             $table->foreign('category_id')->references('id')->on('categories');
 
