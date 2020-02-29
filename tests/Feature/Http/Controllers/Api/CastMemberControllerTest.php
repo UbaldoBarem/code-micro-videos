@@ -87,10 +87,8 @@ class CastMemberControllerTest extends TestCase
 
     public function testShow()
     {
-        $response = $this->get(route('api.cast_members.show', ['cast_member' => $this->castMember->id]));
-        $response
-            ->assertStatus(200)
-            ->assertJson($this->castMember->toArray());
+        $response = $this->json('GET', route('api.cast_members.show', ['cast_member' => $this->castMember->id]));
+        $response->assertStatus(200)->assertJson($this->castMember->toArray());
     }
 
     public function testDestroy()

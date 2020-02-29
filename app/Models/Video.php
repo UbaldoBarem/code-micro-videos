@@ -5,18 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Genre extends Model
+class Video extends Model
 {
     use SoftDeletes;
     use Traits\Uuid;
+
+    const RATTING_LIST = ['L', '10', '12', '14', '16', '18'];
 
     public $incrementing = false;
 
     protected $fillable =
         [
-            'name',
+            'title',
             'description',
-            'is_active'
+            'year_launched',
+            'opened',
+            'rating',
+            'duration'
         ];
 
     protected $dates =
@@ -29,7 +34,9 @@ class Genre extends Model
     protected $casts =
         [
             'id' => 'string',
-            'is_active' => 'boolean'
+            'opened' => 'boolean',
+            'year_launched' => 'integer',
+            'duration' => 'integer'
         ];
 
     public function categories()
@@ -37,9 +44,8 @@ class Genre extends Model
         return $this->belongsToMany(Category::class)->withTrashed();
     }
 
-    public function videos()
+    public function genres()
     {
-        return $this->belongsToMany(Video::class)->withTrashed();
+        return $this->belongsToMany(Genre::class)->withTrashed();
     }
-
 }

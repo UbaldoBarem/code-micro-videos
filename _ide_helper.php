@@ -3,15 +3,7 @@
 
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
-<<<<<<< HEAD
-<<<<<<< HEAD
- * Generated for Laravel 6.0.1 on 2020-02-11 05:10:43.
-=======
- * Generated for Laravel 6.0.1 on 2020-02-11 12:57:26.
->>>>>>> feature/categories-create
-=======
- * Generated for Laravel 6.0.1 on 2020-02-11 12:57:26.
->>>>>>> feature/categories-create
+ * Generated for Laravel 6.0.1 on 2020-02-27 06:39:34.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
