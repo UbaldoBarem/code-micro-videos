@@ -152,7 +152,7 @@ class VideoControllerTest extends TestCase
         $this->assertInvalidationInUpdateAction($data, 'in');
     }
 
-    public function testSave()
+    /* public function testSave()
     {
         $category = factory(Category::class)->create();
         $genre = factory(Genre::class)->create();
@@ -308,6 +308,7 @@ class VideoControllerTest extends TestCase
 
         $this->assertTrue($hasError);
     }
+    */
 
     protected function assertHasCategory($genreId, $categoryId)
     {
@@ -326,7 +327,8 @@ class VideoControllerTest extends TestCase
     }
 
 
-    public function testSyncCategories()
+    /*
+     public function testSyncCategories()
     {
         $categoriesId = factory(Category::class, 3)->create()->pluck('id')->toArray();
         $genre = factory(Genre::class)->create();
@@ -372,10 +374,11 @@ class VideoControllerTest extends TestCase
         ]);
     }
 
+/*
 
     public function testSyncGenres()
     {
-        /** @var Collection $genres */
+        /** @var Collection $genres
         $genres = factory(Genre::class, 3)->create();
         $genresId = $genres->pluck('id')->toArray();
         $categoryId = factory(Category::class)->create()->id;
@@ -417,6 +420,7 @@ class VideoControllerTest extends TestCase
             'video_id' => $response->json('id'),
         ]);
     }
+*/
 
 
     public function testShow()
