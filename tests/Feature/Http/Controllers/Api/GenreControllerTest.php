@@ -50,7 +50,8 @@ class GenreControllerTest extends TestCase
     {
         $data = [
             'name' => '',
-            'categories_id' => ''
+            // 'categories_id' => '',
+            'categories' => []
         ];
         $this->assertInvalidationInStoreAction($data, 'required');
         $this->assertInvalidationInUpdateAction($data, 'required');
