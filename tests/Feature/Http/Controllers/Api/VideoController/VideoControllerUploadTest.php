@@ -6,7 +6,6 @@ namespace Tests\Feature\Http\Controllers\Api\VideoController;
 use App\Models\Genre;
 use App\Models\Video;
 use App\Models\Category;
-use Tests\Traits\TestSaves;
 use Illuminate\Http\UploadedFile;
 use Tests\Traits\TestValidations;
 use Tests\Traits\TestUploads;
