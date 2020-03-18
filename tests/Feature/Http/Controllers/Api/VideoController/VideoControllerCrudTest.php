@@ -1,48 +1,19 @@
 <?php
-declare(strict_types=1);
 
-namespace Tests\Feature\Http\Controllers\Api;
+namespace Tests\Feature\Http\Controllers\Api\VideoController;
 
-use Tests\TestCase;
+use App\Models\Genre;
+use App\Models\Video;
+use App\Models\Category;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestUploads;
 use Tests\Traits\TestValidations;
-use App\Http\Controllers\Api\VideoController;
-use App\Models\Category;
-use App\Models\Genre;
-use App\Models\Video;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Collection;
-use Tests\Exceptions\TestException;
 
-class VideoControllerTest extends TestCase
+class VideoControllerCrudTest extends BaseVideoControllerTestCase
 {
-
-    use DatabaseMigrations;
     use TestValidations;
-    use TestSaves;
     use TestUploads;
-
-    private $video;
-    private $sendData;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $genre = factory(Genre::class)->create();
-        $this->video = factory(Video::class)->create([
-            'opened' => false
-        ]);
-        $this->sendData = [
-            'title' => 'title',
-            'description' => 'description',
-            'year_launched' => 2010,
-            'rating' => Video::RATTING_LIST[0],
-            'duration' => 90,
-        ];
-    }
+    use TestSaves;
 
     public function testIndex()
     {
@@ -235,135 +206,6 @@ class VideoControllerTest extends TestCase
         }
     }
 
-    public function testStoreWithFiles()
-    {
-        \Storage::fake();
-        $files = $this->getFiles();
-
-        $category = factory(Category::class)->create();
-        $genre = factory(Genre::class)->create();
-        $genre->categories()->sync($category->id);
-
-        $response = $this->json(
-            'POST',
-            $this->routeStore(),
-            $this->sendData +
-            [
-                'categories_id' => [$category->id],
-                'genres_id' => [$genre->id],
-            ]
-            + $files
-        );
-
-        $response->assertStatus(201);
-        $id = $response->json('id');
-        foreach ($files as $file) {
-            \Storage::assertExists("$id/{$file->hashName()}");
-        }
-    }
-
-    public function testUpdateWithFiles()
-    {
-
-        \Storage::fake();
-        $files = $this->getFiles();
-
-        $category = factory(Category::class)->create();
-        $genre = factory(Genre::class)->create();
-        $genre->categories()->sync($category->id);
-
-        $response = $this->json(
-            'PUT',
-            $this->routeStore(),
-            $this->sendData + [
-                'categories_id' => [$category->id],
-                'genres_id' => [$genre->id],
-            ] + $files
-        );
-
-        $response->assertStatus(200);
-        $id = $response->json('id');
-        foreach ($files as $file) {
-            \Storage::assertExists("$id/{$file->hashName()}");
-        }
-    }
-
-    protected function getFiles()
-    {
-        return [
-            'video_file' => UploadedFile::fake()->create('video_file.mp4')
-        ];
-    }
-
-
-    // public function testRollbackStore()
-    // {
-    //     $controller = \Mockery::mock(VideoController::class)
-    //         ->makePartial()
-    //         ->shouldAllowMockingProtectedMethods();
-    //     $controller
-    //         ->shouldReceive('validate')
-    //         ->withAnyArgs()
-    //         ->andReturn($this->sendData);
-    //     $controller
-    //         ->shouldReceive('rulesStore')
-    //         ->withAnyArgs()
-    //         ->andReturn([]);
-    //     $controller
-    //         ->shouldReceive('handleRelations')
-    //         ->once()
-    //         ->andThrow(new TestException());
-    //     $request = \Mockery::mock(Request::class);
-    //     $request->shouldReceive('get')
-    //             ->withAnyArgs()
-    //             ->andReturnNull();
-    //     $hasError = false;
-    //     try{
-    //         $controller->store($request);
-    //     }catch(TestException $exception){
-    //         $this->assertCount(1,Video::all());
-    //         $hasError = true;
-    //     }
-    //     $this->assertTrue($hasError);
-    // }
-
-    // public function testRollbackUpdate()
-    // {
-    //     $controller = \Mockery::mock(VideoController::class)
-    //         ->makePartial()
-    //         ->shouldAllowMockingProtectedMethods();
-    //     $controller
-    //         ->shouldReceive('findOrFail')
-    //         ->withAnyArgs()
-    //         ->andReturn($this->video);
-    //     $controller
-    //         ->shouldReceive('validate')
-    //         ->withAnyArgs()
-    //         ->andReturn([
-    //             'name' => 'test',
-    //         ]);
-    //     $controller
-    //         ->shouldReceive('rulesUpdate')
-    //         ->withAnyArgs()
-    //         ->andReturn([]);
-    //     $controller
-    //         ->shouldReceive('handleRelations')
-    //         ->once()
-    //         ->andThrow(new TestException());
-    //     $request = \Mockery::mock(Request::class);
-    //     $request->shouldReceive('get')
-    //             ->withAnyArgs()
-    //             ->andReturnNull();
-    //     $hasError = false;
-    //     try{
-    //         $controller->update($request, 1);
-    //     }catch(TestException $exception){
-    //         $this->assertCount(1,Video::all());
-    //         $hasError = true;
-    //     }
-    //     $this->assertTrue($hasError);
-    // }
-
 
     public function testShow()
     {
@@ -518,16 +360,12 @@ class VideoControllerTest extends TestCase
 
     }
 
-
     public function testeDelete()
     {
         $response = $this->json('DELETE', route('api.videos.destroy', ['video' => $this->video->id]));
         $response->assertStatus(204);
         $this->assertNull(Video::find($this->video->id));
         $this->assertNotNull(Video::withTrashed()->find($this->video->id));
-
-        // $genre->restore();
-        // $this->assertNotNull(Genre::find($genre->id));
     }
 
     protected function routeStore()
