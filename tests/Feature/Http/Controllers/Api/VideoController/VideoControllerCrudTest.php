@@ -8,6 +8,7 @@ use App\Models\Category;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestUploads;
 use Tests\Traits\TestValidations;
+use Illuminate\Support\Arr;
 
 class VideoControllerCrudTest extends BaseVideoControllerTestCase
 {
@@ -143,32 +144,24 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     public function testSaveWithoutFiles()
     {
-        $category = factory(Category::class)->create();
-        $genre = factory(Genre::class)->create();
-        $genre->categories()->sync($category->id);
+        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id']);
+
         $data = [
             [
-                'send_data' => $this->sendData + [
-                        'categories_id' => [$category->id],
-                        'genres_id' => [$genre->id],
-                    ],
-                'test_data' => $this->sendData + ['opened' => false]
+                'send_data' => $this->sendData,
+                'test_data' => $testData + ['opened' => false]
             ],
             [
                 'send_data' => $this->sendData + [
-                        'opened' => true,
-                        'categories_id' => [$category->id],
-                        'genres_id' => [$genre->id],
+                        'opened' => true
                     ],
-                'test_data' => $this->sendData + ['opened' => true]
+                'test_data' => $testData + ['opened' => true]
             ],
             [
                 'send_data' => $this->sendData + [
-                        'rating' => Video::RATTING_LIST[1],
-                        'categories_id' => [$category->id],
-                        'genres_id' => [$genre->id],
+                        'rating' => Video::RATTING_LIST[1]
                     ],
-                'test_data' => $this->sendData + ['rating' => Video::RATTING_LIST[1]]
+                'test_data' => $testData + ['rating' => Video::RATTING_LIST[1]]
             ]
         ];
 
@@ -177,7 +170,11 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 $value['send_data'],
                 $value['test_data'] + ['deleted_at' => null]
             );
-            $response->assertJsonStructure(['created_at', 'updated_at']);
+
+            $response->assertJsonStructure([
+                'created_at', 'updated_at'
+            ]);
+
             $this->assertHasCategory(
                 $response->json('id'),
                 $value['send_data']['categories_id'][0]
@@ -191,7 +188,9 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 $value['send_data'],
                 $value['test_data'] + ['deleted_at' => null]
             );
-            $response->assertJsonStructure(['created_at', 'updated_at']);
+            $response->assertJsonStructure([
+                'created_at', 'updated_at'
+            ]);
 
             $this->assertHasCategory(
                 $response->json('id'),
@@ -218,7 +217,6 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     public function testUpdate()
     {
-
         $category = factory(Category::class)->create();
         $genre = factory(Genre::class)->create();
         $genre->categories()->sync($category->id);
@@ -360,12 +358,17 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     }
 
-    public function testeDelete()
+    public function testDestroy()
     {
         $response = $this->json('DELETE', route('api.videos.destroy', ['video' => $this->video->id]));
         $response->assertStatus(204);
         $this->assertNull(Video::find($this->video->id));
         $this->assertNotNull(Video::withTrashed()->find($this->video->id));
+    }
+
+    protected function model()
+    {
+        return Video::class;
     }
 
     protected function routeStore()
@@ -378,9 +381,5 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
         return route('api.videos.update', ['video' => $this->video->id]);
     }
 
-    protected function model()
-    {
-        return Video::class;
-    }
 
 }

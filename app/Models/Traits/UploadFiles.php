@@ -27,6 +27,11 @@ trait UploadFiles
         });
     }
 
+    public function relativeFilePath($value)
+    {
+        return "{$this->uploadDir()}/{$value}";
+    }
+
     /** @param UploadedFile[] $files */
     public function uploadFiles(array $files)
     {
@@ -52,10 +57,7 @@ trait UploadFiles
         $this->deleteFiles($this->oldFiles);
     }
 
-    /**
-     *
-     * @param string/UploadedFile $file
-     */
+    /** @param string/UploadedFile $file */
     public function deleteFile($file)
     {
         $filename = $file instanceof UploadedFile ? $file->hashName() : $file;
@@ -72,6 +74,11 @@ trait UploadFiles
             }
         }
         return $files;
+    }
+
+    protected function getFileUrl($filename)
+    {
+        return \Storage::url($this->relativeFilePath($filename));
     }
 
 }
