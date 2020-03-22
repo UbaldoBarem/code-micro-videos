@@ -42,7 +42,8 @@ class VideoController extends BasicCrudController
         $validatedData = $this->validate($request, $this->rulesStore());
         $obj = $this->model()::create($validatedData);
         $obj->refresh();
-        return $obj;
+        $resource = $this->resource();
+        return $resource($obj);
     }
 
     public function update(Request $request, $id)
@@ -51,7 +52,8 @@ class VideoController extends BasicCrudController
         $this->addRuleIfGenreHasCategories($request);
         $validatedData = $this->validate($request, $this->rulesUpdate());
         $obj->update($validatedData);
-        return $obj;
+        $resource = $this->resource();
+        return $resource($obj);
     }
 
 
@@ -85,14 +87,14 @@ class VideoController extends BasicCrudController
         return $this->model()::all();
     }
 
+    protected function resource()
+    {
+        return VideoResource::class;
+    }
 
     protected function resourceCollection()
     {
         return $this->resource();
     }
 
-    protected function resource()
-    {
-        return VideoResource::class;
-    }
 }
