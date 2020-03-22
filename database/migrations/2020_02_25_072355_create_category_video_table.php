@@ -10,6 +10,8 @@ class CreateCategoryVideoTable extends Migration
     {
         Schema::create('category_video', function (Blueprint $table) {
 
+            $table->engine = 'InnoDB';
+
             $table->uuid('category_id')->index();
             $table->foreign('category_id')->references('id')->on('categories');
 

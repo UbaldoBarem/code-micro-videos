@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use App\Rules\GenreHasCategoriesRule;
 use Illuminate\Http\Request;
+
 
 class VideoController extends BasicCrudController
 {
@@ -26,7 +28,11 @@ class VideoController extends BasicCrudController
                         'required',
                         'array',
                         'exists:genres,id,deleted_at,NULL'
-                    ]
+                    ],
+                'thumb_file' => 'image|max:' . Video::THUMB_FILE_MAX_SIZE,
+                'banner_file' => 'image|max:' . Video::BANNER_FILE_MAX_SIZE,
+                'trailer_file' => 'mimetypes:video/mp4|max:' . Video::TRAILER_FILE_MAX_SIZE,
+                'video_file' => 'mimetypes:video/mp4|max:' . Video::VIDEO_FILE_MAX_SIZE
             ];
     }
 
@@ -34,13 +40,7 @@ class VideoController extends BasicCrudController
     {
         $this->addRuleIfGenreHasCategories($request);
         $validatedData = $this->validate($request, $this->rulesStore());
-        $self = $this;
-        $obj = \DB::transaction(function () use ($request, $validatedData, $self) {
-            $obj = $this->model()::create($validatedData);
-            $self->handleRelations($obj, $request);
-            return $obj;
-        });
-
+        $obj = $this->model()::create($validatedData);
         $obj->refresh();
         return $obj;
     }
@@ -50,19 +50,8 @@ class VideoController extends BasicCrudController
         $obj = $this->findOrFail($id);
         $this->addRuleIfGenreHasCategories($request);
         $validatedData = $this->validate($request, $this->rulesUpdate());
-        $self = $this;
-        $obj = \DB::transaction(function () use ($request, $validatedData, $self, $obj) {
-            $obj->update($validatedData);
-            $self->handleRelations($obj, $request);
-            return $obj;
-        });
+        $obj->update($validatedData);
         return $obj;
-    }
-
-    protected function handleRelations($video, Request $request)
-    {
-        $video->categories()->sync($request->get('categories_id'));
-        $video->genres()->sync($request->get('genres_id'));
     }
 
 
@@ -75,7 +64,6 @@ class VideoController extends BasicCrudController
             $categoriesId
         );
     }
-
 
     protected function model()
     {
@@ -97,4 +85,14 @@ class VideoController extends BasicCrudController
         return $this->model()::all();
     }
 
+
+    protected function resourceCollection()
+    {
+        return $this->resource();
+    }
+
+    protected function resource()
+    {
+        return VideoResource::class;
+    }
 }

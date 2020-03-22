@@ -32,7 +32,7 @@ class GenreHasCategoriesRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        if(!is_array($value)){
+        if (!is_array($value)) {
             $value = [];
         }
         $this->genresId = array_unique($value);
