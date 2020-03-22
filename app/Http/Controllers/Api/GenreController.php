@@ -26,7 +26,8 @@ class GenreController extends BasicCrudController
         });
 
         $obj->refresh();
-        return $obj;
+        $resource = $this->resource();
+        return $resource($obj);
     }
 
     public function update(Request $request, $id)
@@ -38,7 +39,8 @@ class GenreController extends BasicCrudController
             $obj->update($validatedData);
             $self->handleRelations($obj, $request);
         });
-        return $obj;
+        $resource = $this->resource();
+        return $resource($obj);
     }
 
     protected function handleRelations($genre, Request $request)
