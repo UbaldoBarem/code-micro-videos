@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Traits\Uuid;
 use App\Models\Traits\UploadFiles;
 
+
 class Video extends Model
 {
     use SoftDeletes;
@@ -22,6 +23,7 @@ class Video extends Model
     const VIDEO_FILE_MAX_SIZE = 1024 * 1024 * 50; // 50Gb
 
     public $incrementing = false;
+
     public static $fileFields = ['video_file', 'thumb_file','banner_file','trailer_file'];
 
     protected $fillable =
@@ -59,18 +61,18 @@ class Video extends Model
         $files = self::extractFiles($attributes);
 
         try {
-            DB::beginTransaction();
+            \DB::beginTransaction();
             /** @var Video $obj */
             $obj = static::query()->create($attributes);
             static::handleRelations($obj, $attributes);
             $obj->uploadFiles($files);
-            DB::commit();
+            \DB::commit();
             return $obj;
         } catch (\Exception $e) {
             if (isset($obj)) {
                 $obj->deleteFiles($files);
             }
-            DB::rollBack();
+            \DB::rollBack();
             throw $e;
         }
     }
@@ -79,20 +81,20 @@ class Video extends Model
     {
         $files = self::extractFiles($attributes);
         try {
-            DB::beginTransaction();
+            \DB::beginTransaction();
             $saved = parent::update($attributes, $options);
             static::handleRelations($this, $attributes);
             if ($saved) {
                 $this->uploadFiles($files);
             }
-            DB::commit();
+            \DB::commit();
             if ($saved && count($files)) {
                 $this->deleteOldFiles();
             }
             return $saved;
         } catch (\Exception $e) {
             $this->deleteFiles($files);
-            DB::rollBack();
+            \DB::rollBack();
             throw $e;
         }
     }
@@ -135,7 +137,7 @@ class Video extends Model
     {
         return $this->trailer_file ? $this->getFileUrl($this->trailer_file): null;
     }
-    public function getVodeoFileUrlAttribute()
+    public function getVideoFileUrlAttribute()
     {
         return $this->video_file ? $this->getFileUrl($this->video_file): null;
     }

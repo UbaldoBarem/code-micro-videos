@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Genre extends Model
 {
     use SoftDeletes;
@@ -37,9 +38,9 @@ class Genre extends Model
         return $this->belongsToMany(Category::class)->withTrashed();
     }
 
-    public function videos()
-    {
-        return $this->belongsToMany(Video::class)->withTrashed();
-    }
+//    public function videos()
+//    {
+//        return $this->belongsToMany(Video::class)->withTrashed();
+//    }
 
 }

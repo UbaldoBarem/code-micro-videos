@@ -6,8 +6,6 @@ use App\Http\Resources\CastMemberResource;
 use App\Models\CastMember;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\TestResources;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestValidations;
@@ -19,9 +17,8 @@ class CastMemberControllerTest extends TestCase
     use TestSaves;
     use TestResources;
 
-
     private $castMember;
-    private $fieldsSerialized = [
+    private $serializedFields = [
         'id',
         'name',
         'type',
@@ -47,7 +44,7 @@ class CastMemberControllerTest extends TestCase
             ->assertJsonStructure(
                 [
                     'data' => [
-                        '*' => $this->fieldsSerialized
+                        '*' => $this->serializedFields
                     ],
                     'meta' => [],
                     'links' => []
@@ -62,6 +59,7 @@ class CastMemberControllerTest extends TestCase
             'name' => '',
             'type' => ''
         ];
+        //dd($data);
         $this->assertInvalidationInStoreAction($data, 'required');
         $this->assertInvalidationInUpdateAction($data, 'required');
 
@@ -87,9 +85,14 @@ class CastMemberControllerTest extends TestCase
         ];
         foreach ($data as $key => $value) {
             $response = $this->assertStore($value, $value + ['deleted_at' => null]);
+
             $response->assertJsonStructure([
-                'created_at', 'updated_at'
+                'data' => $this->serializedFields
             ]);
+
+            $this->assertResource($response, new CastMemberResource(
+                CastMember::find($response->json('data.id'))
+            ));
         }
     }
 
@@ -101,15 +104,26 @@ class CastMemberControllerTest extends TestCase
         ];
         $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
         $response->assertJsonStructure([
-            'created_at', 'updated_at'
+            'data' => $this->serializedFields
         ]);
+
+        $this->assertResource($response, new CastMemberResource(
+            CastMember::find($response->json('data.id'))
+        ));
 
     }
 
     public function testShow()
     {
         $response = $this->json('GET', route('api.cast_members.show', ['cast_member' => $this->castMember->id]));
-        $response->assertStatus(200)->assertJson($this->castMember->toArray());
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => $this->serializedFields
+            ])
+            ->assertJsonFragment($this->castMember->toArray());
+
+        $this->assertResource($response, new CastMemberResource($this->castMember));
     }
 
     public function testDestroy()

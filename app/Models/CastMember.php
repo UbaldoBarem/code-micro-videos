@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class CastMember extends Model
 {
     use SoftDeletes;
     use Traits\Uuid;
 
-    public $incrementing = false;
-
     const TYPE_DIRECTOR = 1;
     const TYPE_ACTOR = 2;
+
+    public $incrementing = false;
 
     protected $fillable =
         [
@@ -30,6 +31,7 @@ class CastMember extends Model
 
     protected $casts =
         [
-            'id' => 'string'
+            'id' => 'string',
+            'type' =>'integer'
         ];
 }
